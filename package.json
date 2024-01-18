@@ -1,0 +1,23 @@
+{
+	"name": "dsp-core",
+	"version": "0.0.1",
+	"description": "A Digital Signal Processing package to be used for general computations involving Signals and Systems",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsup",
+		"lint": "eslint . --ext .ts",
+		"prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+	},
+	"author": "abdullah131566",
+	"license": "MIT",
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^6.19.0",
+		"@typescript-eslint/parser": "^6.19.0",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "^5.1.3",
+		"prettier": "^3.2.4",
+		"tsup": "^8.0.1",
+		"typescript": "^5.3.3"
+	}
+}
