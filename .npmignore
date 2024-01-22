@@ -1,12 +1,16 @@
 /src
 /node_modules
+/test
 
 .env
 .DS_Store
 
 tsconfig.json
 tsup.config.ts
+jest.config.ts
 .prettierrc
 .gitignore
 .eslintrc
 .eslintignore
+package-lock.json
+yarn.lock
