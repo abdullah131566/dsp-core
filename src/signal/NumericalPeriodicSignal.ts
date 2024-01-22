@@ -33,8 +33,10 @@ export class NumericalPeriodicSignal extends NumericalSignal {
         );
       this.#intervalFunctionPairs = intervalFunctionPairs;
       this.#period =
+        1 +
         (intervalFunctionPairs[intervalFunctionPairs.length - 1][0]
-          .end as number) - (intervalFunctionPairs[0][0].begin as number);
+          .end as number) -
+        (intervalFunctionPairs[0][0].begin as number);
     } else
       throw new Error(
         'intervalFunctionPairs or periodicMathmaticalFn and period must be specified'
@@ -42,18 +44,19 @@ export class NumericalPeriodicSignal extends NumericalSignal {
     this.#cache = new Map<number, Complex>();
   }
   async fetch(index: number): Promise<Complex> {
-    if (this.#cache.has(index)) {
-      return this.#cache.get(index) as Complex;
+    const normalizedIndex = index % this.#period;
+    if (this.#cache.has(normalizedIndex)) {
+      return this.#cache.get(normalizedIndex) as Complex;
     }
     const interval = this.#intervalFunctionPairs.find(([interval, _]) =>
-      interval.contains(index)
+      interval.contains(normalizedIndex)
     );
     if (interval === undefined) {
       throw new Error(`Interval not found for index ${index}`);
     }
     const [_, fn] = interval;
-    const value = fn(index);
-    this.#cache.set(index, value);
+    const value = fn(normalizedIndex);
+    this.#cache.set(normalizedIndex, value);
     return value;
   }
 
