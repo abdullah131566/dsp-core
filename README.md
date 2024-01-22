@@ -1,4 +1,4 @@
-# Project Name
+# dsp-core
 
 An open source package that supports the signal and system representation and is extendible to various signal processing tasks and applications.
 
