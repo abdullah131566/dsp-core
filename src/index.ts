@@ -2,11 +2,22 @@
 export type { Complex } from './signal/Signal';
 
 // Exporting from signal/Interval.ts
-export { Interval } from './signal/Interval';
+export {
+  Interval,
+  FiniteInterval,
+  InfiniteInterval,
+  LeftOpenInterval,
+  RightOpenInterval
+} from './signal/Interval';
 export type {
   IntervalValue,
-  IntervalValueBegin,
-  IntervalValueEnd
+  IntervalBegin,
+  IntervalEnd,
+  IntervalPair,
+  IntervalBeginClosed,
+  IntervalEndClosed,
+  IntervalBeginOpen,
+  IntervalEndOpen
 } from './signal/Interval';
 
 // Export from signal/NumericalPeriodicSignal.ts

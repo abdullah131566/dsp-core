@@ -1,4 +1,9 @@
-import { Interval } from './Interval';
+import {
+  Interval,
+  FiniteInterval,
+  IntervalBeginClosed,
+  IntervalEndClosed
+} from './Interval';
 import { Complex, NumericalSignal } from './Signal';
 
 type NumericalPeriodicSignalConstructorArgs = {
@@ -11,40 +16,59 @@ export class NumericalPeriodicSignal extends NumericalSignal {
   #period: number;
   #intervalFunctionPairs: IntervalFunctionPair[];
   #cache: Map<number, Complex>;
+  #interval: FiniteInterval;
+
   public constructor({
     intervalFunctionPairs,
     periodicMathmaticalFn,
     period
   }: NumericalPeriodicSignalConstructorArgs = {}) {
+    const withFnAndPeriod =
+      periodicMathmaticalFn !== undefined && period !== undefined;
+    const withIntervalFunctionPairs = intervalFunctionPairs !== undefined;
+
+    if (!withFnAndPeriod && !withIntervalFunctionPairs)
+      throw new Error(
+        'NumericalPeriodicSignal must be constructed with either periodicMathmaticalFn and period or intervalFunctionPairs'
+      );
+
     super();
-    if (periodicMathmaticalFn !== undefined && period !== undefined) {
-      const interval = new Interval();
-      this.#intervalFunctionPairs = [[interval, periodicMathmaticalFn]];
+    if (withFnAndPeriod) {
+      this.#interval = new FiniteInterval({ begin: 0, end: period - 1 });
+      this.#intervalFunctionPairs = [[this.#interval, periodicMathmaticalFn]];
       this.#period = period;
-    } else if (intervalFunctionPairs && intervalFunctionPairs.length > 0) {
+    } else if (withIntervalFunctionPairs) {
       if (
-        intervalFunctionPairs.some(
-          ([interval, _]) =>
-            interval.begin === '-inf' || interval.end === '+inf'
+        intervalFunctionPairs.some(([interval, _]) =>
+          Interval.isOpenInterval(interval)
         )
       )
         throw new Error(
-          'intervalFunctionPairs must not contain infinite intervals for periodic signals'
+          'intervalFunctionPairs must not contain open intervals for periodic signals'
         );
+
       this.#intervalFunctionPairs = intervalFunctionPairs;
-      this.#period =
-        1 +
-        (intervalFunctionPairs[intervalFunctionPairs.length - 1][0]
-          .end as number) -
-        (intervalFunctionPairs[0][0].begin as number);
+
+      const periodBegin = intervalFunctionPairs[0][0]
+        .begin as IntervalBeginClosed;
+      const periodEnd = intervalFunctionPairs[
+        intervalFunctionPairs.length - 1
+      ][0].end as IntervalEndClosed;
+
+      this.#interval = new FiniteInterval({
+        begin: periodBegin,
+        end: periodEnd
+      });
+      this.#period = 1 + periodEnd - periodBegin;
     } else
       throw new Error(
-        'intervalFunctionPairs or periodicMathmaticalFn and period must be specified'
+        'Something went wrong in NumericalPeriodicSignal constructor'
       );
     this.#cache = new Map<number, Complex>();
   }
+
   async fetch(index: number): Promise<Complex> {
-    const normalizedIndex = index % this.#period;
+    const normalizedIndex = this.normalizeIndex(index);
     if (this.#cache.has(normalizedIndex)) {
       return this.#cache.get(normalizedIndex) as Complex;
     }
@@ -69,6 +93,17 @@ export class NumericalPeriodicSignal extends NumericalSignal {
   }
   public get period(): number {
     return this.#period;
+  }
+  private normalizeIndex(index: number): number {
+    if (this.#interval.contains(index)) return index;
+
+    const periodBegin = this.#interval.begin;
+    const periodEnd = this.#interval.end;
+    let multiplier: number;
+    if (index < periodBegin)
+      multiplier = Math.floor((periodEnd - index) / this.#period);
+    else multiplier = Math.ceil((periodBegin - index) / this.#period);
+    return index + multiplier * this.#period;
   }
 }
 
