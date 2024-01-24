@@ -2,14 +2,42 @@
   "name": "dsp-core",
   "version": "0.0.1",
   "description": "A Digital Signal Processing package to be used for general computations involving Signals and Systems",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "keywords": [
+    "dsp",
+    "digital",
+    "signal",
+    "processing",
+    "systems",
+    "fft",
+    "dft",
+    "convolution",
+    "correlation",
+    "filter",
+    "filtering"
+  ],
+  "files": [
+    "dist"
+  ],
+  "maintainers": [
+    {
+      "name": "Abdullah",
+      "email": "ashfaqabdullah1122@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abdullah131566/dsp-core"
+  },
   "scripts": {
     "build": "tsup",
     "test": "jest --verbose",
     "lint": "eslint . --ext .ts",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
-  "author": "abdullah131566",
+  "author": "Muhammad Abdullah",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.11",
